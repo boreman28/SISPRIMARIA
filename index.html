@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Sistema de Calificación Escolar 2026 — Dashboard Digital Offline">
+<meta name="theme-color" content="#0d1b2a">
+<title>Sistema Escolar 2026</title>
+
+<!-- Estilos -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="print.css" media="print">
+
+<!-- Librerías externas -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- ==================== LOADER ==================== -->
+<div class="loader-overlay" id="loader">
+  <div style="text-align:center">
+    <div style="width:56px;height:56px;background:linear-gradient(135deg,#2563eb,#06b6d4);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:24px;color:#fff">
+      <i class="fa-solid fa-graduation-cap"></i>
+    </div>
+    <div class="loader-spinner" style="margin:0 auto 16px"></div>
+    <div class="loader-text">Iniciando Sistema Escolar 2026...</div>
+  </div>
+</div>
+
+<!-- ==================== LOGIN ==================== -->
+<div class="login-overlay" id="login-overlay">
+  <div class="login-card" id="login-card">
+    <div class="login-logo"><i class="fa-solid fa-graduation-cap"></i></div>
+    <div class="login-title">Sistema Escolar</div>
+    <div class="login-sub" style="margin:8px 0 28px">Gestión Académica Digital · Año 2026</div>
+    <input type="password" id="pass-input" class="login-input"
+      placeholder="Contraseña de acceso"
+      autocomplete="current-password"
+      oninput="document.getElementById('login-error').style.display='none'">
+    <button class="login-btn" onclick="AUTH.login()">
+      <i class="fa-solid fa-unlock" style="margin-right:8px"></i>Ingresar al Sistema
+    </button>
+    <div class="login-error" id="login-error">
+      <i class="fa-solid fa-circle-xmark"></i> Contraseña incorrecta. Intente de nuevo.
+    </div>
+    <div class="login-footer" style="margin-top:28px">
+      Libreta Digital Segura v3.0 · Offline<br>
+      <h4>Creado Por Jorge Polanco</h4>
+      <span id="electron-badge" style="display:none;color:#06b6d4">
+        <i class="fa-solid fa-desktop"></i> App de Escritorio
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== APP SHELL ==================== -->
+<div id="app" style="display:none">
+
+  <!-- Mobile overlay para sidebar -->
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="UI.closeSidebar()"></div>
+
+  <!-- ========== SIDEBAR ========== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+      <div class="sidebar-brand-text">
+        <div class="sidebar-brand-title">Sistema Escolar</div>
+        <div class="sidebar-subtitle">Año Lectivo 2026</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Principal</div>
+      <div class="nav-item active" data-section="dashboard" onclick="APP.navigate('dashboard',this)">
+        <div class="nav-icon"><i class="fa-solid fa-house"></i></div>
+        <span class="nav-label">Dashboard</span>
+      </div>
+
+      <div class="nav-section-label">Académico</div>
+      <div class="nav-item" data-section="estudiantes" onclick="APP.navigate('estudiantes',this)">
+        <div class="nav-icon"><i class="fa-solid fa-users"></i></div>
+        <span class="nav-label">Estudiantes</span>
+        <span class="nav-badge" id="badge-est">0</span>
+      </div>
+      <div class="nav-item" data-section="calificaciones" onclick="APP.navigate('calificaciones',this)">
+        <div class="nav-icon"><i class="fa-solid fa-clipboard-list"></i></div>
+        <span class="nav-label">Calificaciones</span>
+      </div>
+      <div class="nav-item" data-section="asistencia" onclick="APP.navigate('asistencia',this)">
+        <div class="nav-icon"><i class="fa-solid fa-calendar-check"></i></div>
+        <span class="nav-label">Asistencia</span>
+      </div>
+      <div class="nav-item" data-section="boletin" onclick="APP.navigate('boletin',this)">
+        <div class="nav-icon"><i class="fa-regular fa-file-lines"></i></div>
+        <span class="nav-label">Boletín</span>
+      </div>
+      <div class="nav-item" data-section="honor" onclick="APP.navigate('honor',this)">
+        <div class="nav-icon"><i class="fa-solid fa-trophy"></i></div>
+        <span class="nav-label">Cuadro de Honor</span>
+      </div>
+
+      <div class="nav-section-label">Gestión</div>
+      <div class="nav-item" data-section="horario" onclick="APP.navigate('horario',this)">
+        <div class="nav-icon"><i class="fa-regular fa-clock"></i></div>
+        <span class="nav-label">Horario</span>
+      </div>
+      <div class="nav-item" data-section="configuracion" onclick="APP.navigate('configuracion',this)">
+        <div class="nav-icon"><i class="fa-solid fa-gear"></i></div>
+        <span class="nav-label">Configuración</span>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user" onclick="APP.navigate('configuracion',null)">
+        <div class="user-avatar" id="user-avatar">D</div>
+        <div class="user-info">
+          <div class="user-name" id="user-name">Docente</div>
+          <div class="user-role" id="user-role">Grado · Jornada</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ========== MAIN ========== -->
+  <div class="main-content" id="main-content">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <button class="topbar-toggle" onclick="UI.toggleSidebar()" title="Menú">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+
+      <div class="topbar-breadcrumb">
+        <i class="fa-solid fa-house text-muted" style="font-size:11px"></i>
+        <span style="opacity:.4">›</span>
+        <strong id="breadcrumb-label">Dashboard</strong>
+      </div>
+
+      <div class="topbar-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Buscar estudiante..."
+          id="global-search"
+          oninput="APP.globalSearch(this.value)">
+      </div>
+
+      <div class="topbar-actions">
+        <!-- Indicador de guardado -->
+        <div class="save-status saved" id="save-status" style="cursor:pointer" onclick="STORAGE.mostrarBackups()" title="Ver backups">
+          <i class="fa-solid fa-circle-check"></i>
+          <span>Guardado</span>
+        </div>
+
+        <!-- Tema -->
+        <button class="topbar-btn" id="theme-btn" onclick="UI.toggleTheme()" title="Modo oscuro/claro">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+
+        <!-- Importar -->
+        <button class="topbar-btn" onclick="document.getElementById('file-import').click()" title="Importar Excel">
+          <i class="fa-solid fa-file-import"></i>
+        </button>
+        <input type="file" id="file-import" accept=".xlsx,.xls" style="display:none"
+          onchange="EXCEL.importar(this)">
+
+        <!-- Exportar -->
+        <button class="topbar-btn" onclick="EXCEL.exportar()" title="Exportar Excel">
+          <i class="fa-solid fa-file-excel"></i>
+        </button>
+
+        <!-- Imprimir -->
+        <button class="topbar-btn" onclick="window.print()" title="Imprimir">
+          <i class="fa-solid fa-print"></i>
+        </button>
+
+        <!-- Bloquear -->
+        <button class="topbar-btn" onclick="AUTH.lock()" title="Bloquear sesión">
+          <i class="fa-solid fa-lock"></i>
+        </button>
+
+        <!-- Guardar -->
+        <button class="btn-save-main" onclick="STORAGE.saveManual()" id="btn-save-main">
+          <i class="fa-solid fa-floppy-disk"></i>
+          <span class="save-label">Guardar</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- CONTENIDO -->
+    <main class="page-content" id="page-content">
+
+      <!-- ===== DASHBOARD ===== -->
+      <div class="section-panel active" id="panel-dashboard">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Dashboard Académico</div>
+            <div class="page-sub" id="dash-subtitle">Resumen del año lectivo 2026</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-outline btn-sm" onclick="STORAGE.mostrarBackups()">
+              <i class="fa-solid fa-clock-rotate-left"></i> Backups
+            </button>
+            <button class="btn btn-outline btn-sm" onclick="DASHBOARD.refresh()">
+              <i class="fa-solid fa-arrows-rotate"></i> Actualizar
+            </button>
+          </div>
+        </div>
+
+        <div class="kpi-grid" id="kpi-grid"></div>
+
+        <div class="charts-grid">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <div class="card-title-icon" style="background:#dbeafe;color:#2563eb"><i class="fa-solid fa-chart-line"></i></div>
+                Rendimiento por Trimestre
+              </div>
+            </div>
+            <div class="card-body"><div class="chart-wrap"><canvas id="chart-trimestre"></canvas></div></div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <div class="card-title-icon" style="background:#d1fae5;color:#10b981"><i class="fa-solid fa-chart-pie"></i></div>
+                Distribución de Notas
+              </div>
+            </div>
+            <div class="card-body"><div class="chart-wrap"><canvas id="chart-distribucion"></canvas></div></div>
+          </div>
+        </div>
+
+        <div class="charts-grid-3">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <div class="card-title-icon" style="background:#e0e7ff;color:#6366f1"><i class="fa-solid fa-chart-bar"></i></div>
+                Promedio por Materia
+              </div>
+            </div>
+            <div class="card-body"><div class="chart-wrap"><canvas id="chart-materias"></canvas></div></div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <div class="card-title-icon" style="background:#fef3c7;color:#f59e0b"><i class="fa-solid fa-trophy"></i></div>
+                Top 5 Estudiantes
+              </div>
+            </div>
+            <div class="card-body" id="dash-top5" style="min-height:200px"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== ESTUDIANTES ===== -->
+      <div class="section-panel" id="panel-estudiantes">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Registro de Estudiantes</div>
+            <div class="page-sub">Padrón escolar completo</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-outline btn-sm" onclick="APP.exportarEstudiantes()">
+              <i class="fa-solid fa-file-excel"></i> Exportar
+            </button>
+            <button class="btn btn-primary btn-sm" onclick="APP.agregarEstudiante()">
+              <i class="fa-solid fa-user-plus"></i> Agregar
+            </button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" style="flex-wrap:wrap;gap:10px">
+            <div class="search-bar" style="margin-bottom:0;flex:1;min-width:200px">
+              <div class="search-input-wrap">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Buscar por nombre o cédula..."
+                  id="est-search" oninput="APP.filtrarEstudiantes(this.value)">
+              </div>
+              <select id="est-filter-cond" onchange="APP.filtrarEstudiantes()"
+                style="border:1.5px solid var(--border);border-radius:var(--radius);padding:0 10px;height:40px;background:var(--surface);color:var(--text-main);font-family:inherit;font-size:13px">
+                <option value="">Todas las condiciones</option>
+                <option>Regular</option><option>Especial</option><option>Traslado</option>
+              </select>
+              <select id="est-filter-sexo" onchange="APP.filtrarEstudiantes()"
+                style="border:1.5px solid var(--border);border-radius:var(--radius);padding:0 10px;height:40px;background:var(--surface);color:var(--text-main);font-family:inherit;font-size:13px">
+                <option value="">M / F</option>
+                <option value="M">Masculino</option><option value="F">Femenino</option>
+              </select>
+            </div>
+            <div style="font-size:12px;color:var(--text-sec);white-space:nowrap;align-self:center" id="est-count">0 estudiantes</div>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width:40px">N°</th>
+                  <th>Nombre Completo</th><th>Cédula</th><th>Sexo</th>
+                  <th>Nacimiento</th><th>Condición</th><th>Acudiente</th>
+                  <th>Teléfono</th><th style="width:50px"></th>
+                </tr>
+              </thead>
+              <tbody id="body-est"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== CALIFICACIONES ===== -->
+      <div class="section-panel" id="panel-calificaciones">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Calificaciones</div>
+            <div class="page-sub">Registro de notas por trimestre y asignatura</div>
+          </div>
+          <div class="page-actions">
+            <select id="sel-tri" onchange="APP.renderCalif()"
+              style="border:1.5px solid var(--border);border-radius:var(--radius);padding:0 14px;height:38px;background:var(--surface);color:var(--text-main);font-family:inherit;font-size:13px;font-weight:600">
+              <option value="1">I Trimestre</option>
+              <option value="2">II Trimestre</option>
+              <option value="3">III Trimestre</option>
+            </select>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body" style="padding-bottom:0"><div class="mat-tabs" id="mat-tabs-calif"></div></div>
+          <div id="calif-panel" style="padding:0 22px 22px"></div>
+        </div>
+      </div>
+
+      <!-- ===== ASISTENCIA ===== -->
+      <div class="section-panel" id="panel-asistencia">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Control de Asistencia</div>
+            <div class="page-sub">Registro diario — click para alternar P / A / T</div>
+          </div>
+          <div class="page-actions">
+            <select id="sel-tri-asist" onchange="APP.renderAsistencia()"
+              style="border:1.5px solid var(--border);border-radius:var(--radius);padding:0 14px;height:38px;background:var(--surface);color:var(--text-main);font-family:inherit;font-size:13px;font-weight:600">
+              <option value="1">I Trimestre</option>
+              <option value="2">II Trimestre</option>
+              <option value="3">III Trimestre</option>
+            </select>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body" style="padding-bottom:6px">
+            <div class="mat-tabs" id="mes-tabs"></div>
+            <div style="display:flex;gap:16px;margin-top:6px;flex-wrap:wrap">
+              <span style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text-sec)">
+                <span class="att-btn att-P" style="cursor:default">P</span> Presente
+              </span>
+              <span style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text-sec)">
+                <span class="att-btn att-A" style="cursor:default">A</span> Ausente
+              </span>
+              <span style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text-sec)">
+                <span class="att-btn att-T" style="cursor:default">T</span> Tardanza
+              </span>
+              <span style="font-size:12px;color:var(--text-muted);align-self:center">
+                <i class="fa-solid fa-circle-info"></i> Haz clic en cualquier celda para cambiar el estado
+              </span>
+            </div>
+          </div>
+          <div id="asist-panel" class="table-container" style="padding:0 22px 22px"></div>
+        </div>
+      </div>
+
+      <!-- ===== BOLETÍN ===== -->
+      <div class="section-panel" id="panel-boletin">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Boletín de Calificaciones</div>
+            <div class="page-sub">Informe académico individual</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-outline btn-sm" onclick="window.print()">
+              <i class="fa-solid fa-print"></i> Imprimir
+            </button>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-body">
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+              <label style="font-size:12px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:.5px">
+                Estudiante
+              </label>
+              <select id="sel-est-boletin" onchange="APP.renderBoletin()"
+                style="border:1.5px solid var(--border);border-radius:var(--radius);padding:9px 14px;background:var(--surface);color:var(--text-main);font-family:inherit;font-size:13px;flex:1;max-width:320px">
+              </select>
+              <button class="btn btn-outline btn-sm" onclick="APP.renderBoletinSelector();APP.renderBoletin()">
+                <i class="fa-solid fa-arrows-rotate"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div id="boletin-contenido" class="boletin-wrap"></div>
+      </div>
+
+      <!-- ===== CUADRO DE HONOR ===== -->
+      <div class="section-panel" id="panel-honor">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Cuadro de Honor</div>
+            <div class="page-sub">Ranking académico y estadísticas del grupo</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-outline btn-sm" onclick="DASHBOARD.renderHonor()">
+              <i class="fa-solid fa-arrows-rotate"></i> Actualizar
+            </button>
+          </div>
+        </div>
+        <div class="kpi-grid" id="honor-kpis" style="margin-bottom:24px"></div>
+        <div class="charts-grid" style="margin-bottom:24px">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <div class="card-title-icon" style="background:#e0e7ff;color:#6366f1"><i class="fa-solid fa-chart-bar"></i></div>
+                Promedios Individuales
+              </div>
+            </div>
+            <div class="card-body"><div class="chart-wrap tall"><canvas id="chart-honor-rank"></canvas></div></div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <div class="card-title-icon" style="background:#ccfbf1;color:#14b8a6"><i class="fa-solid fa-chart-line"></i></div>
+                Comparativa Trimestral (Top 5)
+              </div>
+            </div>
+            <div class="card-body"><div class="chart-wrap tall"><canvas id="chart-honor-tri"></canvas></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-title-icon" style="background:#fef3c7;color:#f59e0b"><i class="fa-solid fa-medal"></i></div>
+              Ranking General
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="honor-grid" id="honor-lista"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== HORARIO ===== -->
+      <div class="section-panel" id="panel-horario">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Horario Semanal</div>
+            <div class="page-sub">Distribución de asignaturas por período</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-outline btn-sm" onclick="window.print()">
+              <i class="fa-solid fa-print"></i> Imprimir
+            </button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="table-container">
+            <table class="data-table schedule-table" id="tabla-horario">
+              <thead>
+                <tr>
+                  <th style="width:125px">Hora</th>
+                  <th>Lunes</th><th>Martes</th><th>Miércoles</th><th>Jueves</th><th>Viernes</th>
+                </tr>
+              </thead>
+              <tbody id="body-horario"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== CONFIGURACIÓN ===== -->
+      <div class="section-panel" id="panel-configuracion">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Configuración del Sistema</div>
+            <div class="page-sub">Datos del aula, asignaturas y seguridad</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-primary btn-sm" onclick="APP.guardarConfig()">
+              <i class="fa-solid fa-floppy-disk"></i> Guardar Cambios
+            </button>
+          </div>
+        </div>
+
+        <!-- Datos del Centro -->
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-title-icon" style="background:#dbeafe;color:#2563eb"><i class="fa-solid fa-school"></i></div>
+              Información del Centro Educativo
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="form-grid form-grid-2" style="margin-bottom:16px">
+              <div class="field">
+                <label>Nombre de la Escuela</label>
+                <input id="d-escuela" type="text" placeholder="Ej: Escuela Primaria Juan Pablo II">
+              </div>
+              <div class="field">
+                <label>Nombre del Docente</label>
+                <input id="d-docente" type="text" placeholder="Ej: Prof. María González">
+              </div>
+            </div>
+            <div class="form-grid form-grid-4">
+              <div class="field"><label>Grado</label><input id="d-grado" type="text" placeholder="5° B"></div>
+              <div class="field"><label>Aula N°</label><input id="d-aula" type="text" placeholder="7"></div>
+              <div class="field">
+                <label>Jornada</label>
+                <select id="d-jornada">
+                  <option value="AM">Matutina (AM)</option>
+                  <option value="PM">Vespertina (PM)</option>
+                </select>
+              </div>
+              <div class="field"><label>Año Lectivo</label><input id="d-anio" type="number" value="2026"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Asignaturas -->
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-title-icon" style="background:#d1fae5;color:#10b981"><i class="fa-solid fa-book-open"></i></div>
+              Asignaturas del Grado
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="APP.agregarMateria()">
+              <i class="fa-solid fa-plus"></i> Agregar Asignatura
+            </button>
+          </div>
+          <div class="card-body"><div id="lista-materias"></div></div>
+        </div>
+
+        <!-- Seguridad -->
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-title-icon" style="background:#e0e7ff;color:#6366f1"><i class="fa-solid fa-shield-halved"></i></div>
+              Seguridad y Acceso
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="form-grid form-grid-2" style="margin-bottom:14px">
+              <div class="field">
+                <label>Nueva Contraseña Maestra</label>
+                <input id="new-pass" type="password" placeholder="Mínimo 4 caracteres">
+              </div>
+              <div class="field">
+                <label>&nbsp;</label>
+                <button class="btn btn-outline" onclick="AUTH.cambiarPassword()">
+                  <i class="fa-solid fa-key"></i> Actualizar Contraseña
+                </button>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <button class="btn btn-outline btn-sm" onclick="AUTH.lock()">
+                <i class="fa-solid fa-lock"></i> Bloquear Sesión Ahora
+              </button>
+            </div>
+            <p class="text-sm text-muted" style="margin-top:12px">
+              <i class="fa-solid fa-circle-info"></i>
+              La contraseña se guarda de forma segura en este dispositivo. Contraseña por defecto: <strong>2026</strong>
+            </p>
+          </div>
+        </div>
+
+        <!-- Gestión de Datos -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-title-icon" style="background:#fee2e2;color:#ef4444"><i class="fa-solid fa-database"></i></div>
+              Gestión de Datos y Almacenamiento
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="info-grid" style="margin-bottom:16px">
+              <div class="info-block">
+                <div class="info-block-label">Estado del Sistema</div>
+                <div class="info-block-val" style="color:var(--success)">
+                  <i class="fa-solid fa-wifi"></i> Offline — Operativo
+                </div>
+              </div>
+              <div class="info-block">
+                <div class="info-block-label">Último Guardado</div>
+                <div class="info-block-val" id="config-last-save">—</div>
+              </div>
+              <div class="info-block">
+                <div class="info-block-label">Datos en Dispositivo</div>
+                <div class="info-block-val" id="config-data-size">—</div>
+              </div>
+              <div class="info-block">
+                <div class="info-block-label">Almacenamiento</div>
+                <div class="info-block-val" id="config-idb-status">Verificando...</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <button class="btn btn-success btn-sm" onclick="STORAGE.saveManual()">
+                <i class="fa-solid fa-floppy-disk"></i> Guardar Ahora
+              </button>
+              <button class="btn btn-outline btn-sm" onclick="STORAGE.mostrarBackups()">
+                <i class="fa-solid fa-clock-rotate-left"></i> Ver Backups
+              </button>
+              <button class="btn btn-outline btn-sm" onclick="EXCEL.exportar()">
+                <i class="fa-solid fa-file-excel"></i> Exportar Backup Excel
+              </button>
+              <button class="btn btn-danger btn-sm" onclick="STORAGE.borrarTodo()">
+                <i class="fa-solid fa-trash"></i> Borrar Datos Locales
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main><!-- /page-content -->
+  </div><!-- /main-content -->
+</div><!-- /#app -->
+
+<!-- ==================== TOAST CONTAINER ==================== -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ==================== MODAL ==================== -->
+<div class="modal-backdrop" id="modal-backdrop" style="display:none"
+  onclick="UI.closeModalBackdrop(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-icon" id="modal-icon"></div>
+      <div class="modal-title" id="modal-title">Título</div>
+      <button class="modal-close" onclick="UI.closeModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body"   id="modal-body"></div>
+    <div class="modal-footer" id="modal-footer"></div>
+  </div>
+</div>
+
+<!-- ==================== MÓDULOS JS ==================== -->
+<script src="idb.js"></script>
+<script src="utils.js"></script>
+<script src="storage.js"></script>
+<script src="auth.js"></script>
+<script src="ui.js"></script>
+<script src="charts.js"></script>
+<script src="dashboard.js"></script>
+<script src="excel.js"></script>
+<script src="app.js"></script>
+
+<!-- ==================== SERVICE WORKER + ELECTRON ==================== -->
+<script>
+/* Registrar Service Worker (solo en contexto web/file) */
+if ('serviceWorker' in navigator && !window.electronAPI) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => {
+        console.log('[SW] Registrado:', reg.scope);
+        // Notificar actualización disponible
+        reg.addEventListener('updatefound', () => {
+          const nw = reg.installing;
+          nw.addEventListener('statechange', () => {
+            if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+              UI?.toast?.('Nueva versión disponible. Recarga para actualizar.', 'info', 6000);
+            }
+          });
+        });
+      })
+      .catch(err => console.warn('[SW] Error al registrar:', err));
+  });
+}
+
+/* Detectar si corre en Electron */
+window.addEventListener('DOMContentLoaded', () => {
+  if (window.electronAPI) {
+    document.getElementById('electron-badge').style.display = 'inline';
+    // Mostrar info de la app en config
+    electronAPI.getAppInfo?.().then(info => {
+      if (!info) return;
+      const el = document.getElementById('config-idb-status');
+      if (el) el.textContent = `Electron v${info.version} · ${info.platform}`;
+    });
+  }
+
+  /* Estado de IndexedDB en config */
+  IDB?.getStorageEstimate?.().then(est => {
+    const el = document.getElementById('config-idb-status');
+    if (!el) return;
+    if (est) {
+      el.innerHTML = `IndexedDB · ${UTILS.formatBytes(est.used)} / ${UTILS.formatBytes(est.quota)} (${est.pct}%)`;
+      el.style.color = est.pct > 80 ? 'var(--danger)' : est.pct > 60 ? 'var(--warning)' : 'var(--success)';
+    } else {
+      el.textContent = window.electronAPI ? 'Electron Storage' : 'localStorage (fallback)';
+    }
+  });
+});
+
+/* Evitar pérdida de datos al cerrar la pestaña */
+window.addEventListener('beforeunload', (e) => {
+  if (document.getElementById('save-status')?.classList.contains('pending')) {
+    e.preventDefault();
+    e.returnValue = '¿Salir sin guardar los cambios?';
+  }
+});
+</script>
+</body>
+</html>

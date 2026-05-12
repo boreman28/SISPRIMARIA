@@ -1,0 +1,244 @@
+/* ================================================================
+   print.css — Estilos de Impresión
+   Sistema Escolar 2026
+   ================================================================ */
+
+@media print {
+
+  /* ==================== OCULTAR INTERFAZ ==================== */
+  .sidebar,
+  .topbar,
+  .nav-tabs,
+  .page-header .page-actions,
+  .toast-container,
+  .modal-backdrop,
+  .loader-overlay,
+  .login-overlay,
+  .sidebar-overlay,
+  #kpi-grid,
+  #dash-top5,
+  .charts-grid,
+  .charts-grid-3,
+  .mat-tabs,
+  .search-bar,
+  .btn,
+  button,
+  select,
+  .kpi-grid,
+  .card-header button,
+  .topbar-actions,
+  .topbar-search,
+  .topbar-toggle,
+  .save-status,
+  #honor-kpis,
+  .honor-grid,
+  #chart-honor-rank,
+  #chart-honor-tri,
+  .activity-row button,
+  .est-selector,
+  #badge-est,
+  #nav-tabs { display: none !important; }
+
+  /* ==================== RESET DE LAYOUT ==================== */
+  * { box-sizing: border-box !important; }
+
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+    color: #000 !important;
+    font-family: 'Times New Roman', Times, serif !important;
+    font-size: 11pt !important;
+    line-height: 1.5 !important;
+  }
+
+  #app { display: block !important; }
+  .main-content { margin-left: 0 !important; display: block !important; }
+  .page-content  { padding: 0 !important; }
+
+  /* Solo mostrar la sección activa */
+  .section-panel { display: none !important; }
+  .section-panel.active { display: block !important; }
+
+  /* ==================== BOLETÍN ==================== */
+  .boletin-wrap {
+    max-width: 100% !important;
+    margin: 0 !important;
+    page-break-inside: avoid;
+  }
+
+  .boletin-doc {
+    border: 2px solid #1a56a0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    width: 100% !important;
+  }
+
+  .boletin-header {
+    background: #1a56a0 !important;
+    color: #fff !important;
+    padding: 16px 20px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .boletin-header h2 { font-size: 18pt !important; }
+  .boletin-header p  { font-size: 10pt !important; opacity: 0.85 !important; }
+
+  .boletin-info-bar {
+    background: #dbeafe !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 1fr !important;
+    padding: 12px 20px !important;
+  }
+
+  .boletin-info-item strong { color: #1a56a0 !important; }
+
+  .boletin-table-wrap { padding: 12px 20px !important; }
+
+  .boletin-table { width: 100% !important; border-collapse: collapse !important; }
+
+  .boletin-table th {
+    background: #1a56a0 !important;
+    color: #fff !important;
+    padding: 7px 10px !important;
+    font-size: 9pt !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    border: 1px solid #1a56a0 !important;
+  }
+
+  .boletin-table td {
+    padding: 6px 10px !important;
+    border: 1px solid #ccc !important;
+    font-size: 10pt !important;
+  }
+
+  .boletin-table tr:nth-child(even) td {
+    background: #f5f7fa !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .boletin-footer {
+    background: #1a56a0 !important;
+    color: #fff !important;
+    padding: 10px 20px !important;
+    font-size: 9pt !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Badges de nota impresos */
+  .badge {
+    border: 1px solid #999 !important;
+    padding: 2px 6px !important;
+    border-radius: 4px !important;
+    font-size: 9pt !important;
+    font-weight: 700 !important;
+  }
+  .badge-A { background: #d1fae5 !important; color: #065f46 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  .badge-B { background: #dbeafe !important; color: #1e3a8a !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  .badge-C { background: #fef3c7 !important; color: #78350f !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  .badge-D { background: #fee2e2 !important; color: #7f1d1d !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+  /* ==================== TABLAS GENERALES ==================== */
+  .data-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 9pt !important;
+  }
+  .data-table thead th {
+    background: #1a56a0 !important;
+    color: #fff !important;
+    padding: 6px 8px !important;
+    border: 1px solid #1a56a0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .data-table tbody td {
+    padding: 5px 8px !important;
+    border: 1px solid #ccc !important;
+  }
+  .data-table tbody tr:nth-child(even) td {
+    background: #f5f7fa !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Inputs en tabla de calificaciones */
+  .td-input {
+    border: none !important;
+    background: transparent !important;
+    font-size: 9pt !important;
+    text-align: center !important;
+    width: auto !important;
+    padding: 0 !important;
+  }
+
+  /* ==================== CARDS ==================== */
+  .card {
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+    border-radius: 4px !important;
+    page-break-inside: avoid !important;
+    margin-bottom: 12pt !important;
+  }
+  .card-header { padding: 8px 12px !important; border-bottom: 1px solid #ccc !important; }
+  .card-body   { padding: 10px 12px !important; }
+  .card-title  { font-size: 11pt !important; font-weight: 700 !important; }
+
+  /* ==================== CONFIGURACIÓN DE PÁGINA ==================== */
+  @page {
+    size: Letter portrait;
+    margin: 1.5cm 1.8cm;
+  }
+
+  @page :first {
+    margin-top: 1cm;
+  }
+
+  /* ==================== SALTOS DE PÁGINA ==================== */
+  .page-break-before { page-break-before: always !important; }
+  .page-break-after  { page-break-after:  always !important; }
+  .no-break          { page-break-inside: avoid !important; }
+
+  /* ==================== ENCABEZADO/PIE DE IMPRESIÓN ==================== */
+  .print-header {
+    display: block !important;
+    text-align: center !important;
+    border-bottom: 2px solid #1a56a0 !important;
+    padding-bottom: 8px !important;
+    margin-bottom: 12px !important;
+  }
+  .print-footer {
+    display: block !important;
+    text-align: center !important;
+    border-top: 1px solid #ccc !important;
+    padding-top: 8px !important;
+    margin-top: 12px !important;
+    font-size: 8pt !important;
+    color: #666 !important;
+  }
+
+  /* ==================== HORARIO ==================== */
+  .schedule-hour {
+    background: #dbeafe !important;
+    color: #1a56a0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    padding: 3px 6px !important;
+    font-size: 8pt !important;
+  }
+  .schedule-break {
+    background: #fef3c7 !important;
+    color: #78350f !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* ==================== LINKS ==================== */
+  a[href]::after { content: none !important; }
+}

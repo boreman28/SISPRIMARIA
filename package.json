@@ -1,0 +1,65 @@
+{
+  "name": "sistema-escolar-2026",
+  "version": "3.0.0",
+  "description": "Sistema de Calificación Escolar 2026 — Dashboard Digital Offline",
+  "main": "main.js",
+  "author": "Jorge Polanco",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start":   "electron .",
+    "dev":     "electron . --dev",
+    "build":   "electron-builder",
+    "build:win":   "electron-builder --win",
+    "build:mac":   "electron-builder --mac",
+    "build:linux": "electron-builder --linux"
+  },
+  "build": {
+    "appId":       "com.escolar.sistema2026",
+    "productName": "Sistema Escolar 2026",
+    "icon":        "assets/icons/icon",
+    "files": [
+      "index.html",
+      "style.css",
+      "print.css",
+      "app.js",
+      "utils.js",
+      "storage.js",
+      "auth.js",
+      "ui.js",
+      "charts.js",
+      "dashboard.js",
+      "excel.js",
+      "idb.js",
+      "sw.js",
+      "main.js",
+      "preload.js",
+      "assets/**"
+    ],
+    "win": {
+      "target": ["nsis","portable"],
+      "icon":   "assets/icons/icon.ico"
+    },
+    "mac": {
+      "target": ["dmg","zip"],
+      "icon":   "assets/icons/icon.icns",
+      "category": "public.app-category.education"
+    },
+    "linux": {
+      "target":   ["AppImage","deb"],
+      "icon":     "assets/icons/icon.png",
+      "category": "Education"
+    },
+    "nsis": {
+      "oneClick":              false,
+      "allowToChangeInstallationDirectory": true,
+      "installerHeaderBackground": "#1e3a5f",
+      "installerIcon":  "assets/icons/icon.ico",
+      "uninstallerIcon":"assets/icons/icon.ico"
+    }
+  },
+  "devDependencies": {
+    "electron":         "^28.0.0",
+    "electron-builder": "^24.0.0"
+  }
+}
